@@ -12,7 +12,7 @@
     <tags>java ide jetbrains idea admin</tags>
     <licenseUrl>http://www.jetbrains.org/display/IJOS/License+Information</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <iconUrl>https://ghcdn.rawgit.org/ZeddG93/chocolateypackages/master/public/icons/intellijidea.svg</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/ZeddG93/choco-pkgs-intellijidea/master/public/intellij-idea_logos/icon-intellij-idea.svg</iconUrl>
     <packageSourceUrl>https://github.com/ZeddG93/choco-pkgs-intellijidea/tree/master/ultimate</packageSourceUrl>
     <releaseNotes>https://www.jetbrains.com/idea/whatsnew/</releaseNotes>
     <bugTrackerUrl>https://youtrack.jetbrains.com/issues/IDEA</bugTrackerUrl>
