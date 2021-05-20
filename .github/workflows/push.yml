@@ -1,0 +1,28 @@
+name: push new package
+
+on:
+  push:
+#     branches:
+#       - master
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: ultimate
+        shell: powershell
+        run: |
+          cd ultimate
+          choco pack
+          choco push -k $env:CHOCO_KEY
+        env:
+          CHOCO_KEY: ${{ secrets.CHOCO_KEY }}
+      - name: conmmunity
+        shell: powershell
+        run: |
+          cd conmmunity
+          choco pack
+          choco push -k $env:CHOCO_KEY
+        env:
+          CHOCO_KEY: ${{ secrets.CHOCO_KEY }}
