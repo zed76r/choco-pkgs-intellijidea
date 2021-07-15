@@ -8,7 +8,7 @@ if ($key.Count -gt 0) {
 }
 
 $url = 'https://download.jetbrains.com/idea/ideaIC-2021.1.3.exe'
-$sha256sum = '6e633a8bb63f8192dd9a496bf47e43ea21a4bfaefb6975a4904ce8a85afd803d'
+$sha256sum = '01280767964a921bf15111652339c337deb9ddcbca6b4518eb7ae8f035d16820'
 
 $toolsDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
 if ([System.Environment]::Is64BitOperatingSystem) {
