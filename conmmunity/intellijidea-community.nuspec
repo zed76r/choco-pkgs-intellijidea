@@ -12,8 +12,8 @@
     <tags>java ide jetbrains idea admin</tags>
     <licenseUrl>http://www.jetbrains.org/display/IJOS/License+Information</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <iconUrl>https://raw.githubusercontent.com/ZeddG93/choco-pkgs-intellijidea/master/public/intellij-idea_logos/icon-intellij-idea.svg</iconUrl>
-    <packageSourceUrl>https://github.com/ZeddG93/choco-pkgs-intellijidea/tree/master/conmmunity</packageSourceUrl>
+    <iconUrl>https://raw.githubusercontent.com/ZeddG93/choco-pkgs-intellijidea/main/public/intellij-idea_logos/icon-intellij-idea.svg</iconUrl>
+    <packageSourceUrl>https://github.com/ZeddG93/choco-pkgs-intellijidea/tree/main/conmmunity</packageSourceUrl>
     <releaseNotes>https://www.jetbrains.com/idea/whatsnew/</releaseNotes>
     <bugTrackerUrl>https://youtrack.jetbrains.com/issues/IDEA</bugTrackerUrl>
     <docsUrl>https://www.jetbrains.com/idea/documentation/</docsUrl>
