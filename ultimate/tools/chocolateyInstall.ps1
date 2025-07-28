@@ -7,10 +7,10 @@ if ($key.Count -gt 0) {
     Invoke-Expression -Command $PSScriptRoot\chocolateyUninstall.ps1
 }
 
-$url = 'https://download.jetbrains.com/idea/ideaIU-2025.1.3.exe'
+$url = 'https://download.jetbrains.com/idea/ideaIU-2025.1.4.1.exe'
 # how to get sha256sum
-# curl -s https://download.jetbrains.com/idea/ideaIU-2025.1.3.exe.sha256 | awk '{print $1}' ORS="" | pbcopy
-$sha256sum = 'bd4915c7d12ea500dadcee69307e57d8dd0af787f233fae871a6b910c35a68dd'
+# curl -s https://download.jetbrains.com/idea/ideaIU-2025.1.4.1.exe.sha256 | awk '{print $1}' ORS="" | pbcopy
+$sha256sum = '668f00b0fadd7924be9d758f7fe54c28a43f2a726824c59465a471e0db294cce'
 
 $toolsDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
 if ([System.Environment]::Is64BitOperatingSystem) {
