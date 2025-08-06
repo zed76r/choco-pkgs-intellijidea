@@ -18,10 +18,10 @@ jobs:
           choco push --source https://push.chocolatey.org/ -k $env:CHOCO_KEY
         env:
           CHOCO_KEY: ${{ secrets.CHOCO_KEY }}
-      - name: conmmunity
+      - name: community
         shell: powershell
         run: |
-          cd conmmunity
+          cd community
           choco pack
           choco push --source https://push.chocolatey.org/ -k $env:CHOCO_KEY
         env:
