@@ -10,18 +10,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: ultimate
+      - name: unified
         shell: powershell
         run: |
-          cd ultimate
-          choco pack
-          choco push --source https://push.chocolatey.org/ -k $env:CHOCO_KEY
-        env:
-          CHOCO_KEY: ${{ secrets.CHOCO_KEY }}
-      - name: community
-        shell: powershell
-        run: |
-          cd community
+          cd unified
           choco pack
           choco push --source https://push.chocolatey.org/ -k $env:CHOCO_KEY
         env:

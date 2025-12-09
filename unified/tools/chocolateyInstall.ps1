@@ -7,26 +7,24 @@ if ($key.Count -gt 0) {
     Invoke-Expression -Command $PSScriptRoot\chocolateyUninstall.ps1
 }
 
-$url = 'https://download.jetbrains.com/idea/ideaIU-2025.2.5.exe'
+$url = 'https://download.jetbrains.com/idea/idea-2025.3.exe'
 # how to get sha256sum
-# curl -s https://download.jetbrains.com/idea/ideaIU-2025.2.5.exe.sha256 | awk '{print $1}' ORS="" | pbcopy
-$sha256sum = '16f2ef9d6605c5d6a09c4ba98aac34d2ee8f1ee2ed2ca868aa8806bfe6c1e0b4'
+# curl -s https://download.jetbrains.com/idea/idea-2025.3.exe.sha256 | awk '{print $1}' ORS="" | pbcopy
+$sha256sum = 'd7f0310423078c6a3b136c8a04090c1b6d316c2104dc2502d99167feb7ecc1fc'
 
 $toolsDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
 if ([System.Environment]::Is64BitOperatingSystem) {
     $programFiles = $env:ProgramFiles
-} else {
+}
+else {
     $programFiles = ${env:ProgramFiles(x86)}
 }
-
 $installDir = "$programFiles\JetBrains\IntelliJ IDEA $env:ChocolateyPackageVersion"
 
 $pp = Get-PackageParameters
 if ($pp.InstallDir) {
     $installDir = $pp.InstallDir
 }
-
-
 
 $silentArgs = "/S /CONFIG=$toolsDir\silent.config "
 $silentArgs += "/D=$installDir"
