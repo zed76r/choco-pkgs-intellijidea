@@ -11,6 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: ultimate
+        if: false
         shell: powershell
         run: |
           cd ultimate
@@ -19,6 +20,15 @@ jobs:
         env:
           CHOCO_KEY: ${{ secrets.CHOCO_KEY }}
       - name: community
+        if: false
+        shell: powershell
+        run: |
+          cd community
+          choco pack
+          choco push --source https://push.chocolatey.org/ -k $env:CHOCO_KEY
+        env:
+          CHOCO_KEY: ${{ secrets.CHOCO_KEY }}
+      - name: unified
         shell: powershell
         run: |
           cd unified

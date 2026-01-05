@@ -1,6 +1,6 @@
 ﻿$ErrorActionPreference = 'Stop';
 
-$packageName = 'intellijidea-unified'
+$packageName = 'intellijidea-community'
 $softwareName = 'IntelliJ IDEA*'
 $installerType = 'EXE'
 
