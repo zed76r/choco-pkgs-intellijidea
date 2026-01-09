@@ -18,7 +18,7 @@ fi
 
 VERSION="$1"
 COMMUNITY_URL="https://download.jetbrains.com/idea/idea-${VERSION}.exe"
-ULTIMATE_URL="https://download.jetbrains.com/idea/ideaIU-${VERSION}.exe"
+ULTIMATE_URL="https://download.jetbrains.com/idea/idea-${VERSION}.exe"
 
 echo -e "${YELLOW}Updating IntelliJ IDEA to version ${VERSION}${NC}"
 echo ""
@@ -57,7 +57,7 @@ echo "Updating ultimate/intellijidea-ultimate.nuspec..."
 sed -i '' "s/<version>.*<\/version>/<version>${VERSION}<\/version>/" ultimate/intellijidea-ultimate.nuspec
 
 echo "Updating ultimate/tools/chocolateyInstall.ps1..."
-sed -i '' "s|'https://download.jetbrains.com/idea/ideaIU-.*.exe'|'${ULTIMATE_URL}'|" ultimate/tools/chocolateyInstall.ps1
+sed -i '' "s|'https://download.jetbrains.com/idea/idea-.*.exe'|'${ULTIMATE_URL}'|" ultimate/tools/chocolateyInstall.ps1
 sed -i '' "s/\$sha256sum = '[^']*'/\$sha256sum = '${ULTIMATE_SHA}'/" ultimate/tools/chocolateyInstall.ps1
 
 # Update unified version
