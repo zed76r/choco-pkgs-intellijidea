@@ -9,7 +9,7 @@ if ($key.Count -gt 0) {
 
 $url = 'https://download.jetbrains.com/idea/idea-2025.3.3.exe'
 # how to get sha256sum
-# curl -s https://download.jetbrains.com/idea/idea-2025.3.1.exe.sha256 | awk '{print $1}' ORS="" | pbcopy
+# curl -s https://download.jetbrains.com/idea/idea-2025.3.3.exe.sha256 | awk '{print $1}' ORS="" | pbcopy
 $sha256sum = '22b42d00d745795c361a24300fe924c642a154aa2a9327e47c29865541f86571'
 
 $toolsDir = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
