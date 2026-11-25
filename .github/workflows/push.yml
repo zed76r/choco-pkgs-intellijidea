@@ -1,36 +1,130 @@
-name: push new package
+name: Update and publish IntelliJ IDEA
 
 on:
+  schedule:
+    # Monday and Thursday at 09:17 in China (UTC+8).
+    - cron: '17 1 * * 1,4'
+  workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main]
+    paths:
+      - '*/intellijidea-*.nuspec'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: intellijidea-publish
+  queue: max
+
 jobs:
-  build:
+  prepare:
+    # Enable after a successful manual dry run on main.
+    if: github.event_name != 'schedule' || vars.AUTO_UPDATE == 'true'
     runs-on: windows-latest
+    permissions:
+      contents: write
+    env:
+      GIT_CONFIG_COUNT: '1'
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: 'false'
+    outputs:
+      editions: ${{ steps.prepare.outputs.editions }}
 
     steps:
-      - uses: actions/checkout@v2
-      - name: ultimate
-        shell: powershell
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'schedule' && 'main' || github.sha }}
+          fetch-depth: 0
+          persist-credentials: ${{ github.event_name == 'schedule' }}
+
+      - name: Determine packages to build
+        id: prepare
+        shell: bash
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
         run: |
-          cd ultimate
-          choco pack
-          choco push --source https://push.chocolatey.org/ -k $env:CHOCO_KEY
+          editions=(community ultimate unified)
+          if [[ $GITHUB_EVENT_NAME == push ]]; then
+            changed=()
+            for edition in "${editions[@]}"; do
+              spec="$edition/intellijidea-$edition.nuspec"
+              current=$(sed -nE 's/.*<version>([^<]+)<\/version>.*/\1/p' "$spec")
+              previous=$(git show "${BEFORE_SHA}:$spec" | sed -nE 's/.*<version>([^<]+)<\/version>.*/\1/p')
+              if [[ $current != "$previous" ]]; then
+                changed+=("$edition")
+              fi
+            done
+            editions=("${changed[@]}")
+            if [[ ${#editions[@]} == 0 ]]; then
+              exit 0
+            fi
+          else
+            ./update-versions.sh --latest
+            git diff --check
+            if [[ $GITHUB_EVENT_NAME == schedule ]] && git diff --quiet; then
+              exit 0
+            fi
+          fi
+          editions_json=$(jq -cn '$ARGS.positional' --args "${editions[@]}")
+          printf 'editions=%s\n' "$editions_json" >> "$GITHUB_OUTPUT"
+
+      - name: Pack selected packages
+        if: steps.prepare.outputs.editions != ''
+        shell: pwsh
+        env:
+          EDITIONS: ${{ steps.prepare.outputs.editions }}
+        run: |
+          $outputDirectory = (New-Item -ItemType Directory packages).FullName
+          foreach ($edition in (ConvertFrom-Json $env:EDITIONS)) {
+            choco pack "$edition/intellijidea-$edition.nuspec" --output-directory "$outputDirectory"
+            if ($LASTEXITCODE -ne 0) { throw "choco pack failed for $edition" }
+            $packages = @(Get-ChildItem $outputDirectory -Filter "intellijidea-$edition.*.nupkg" -File)
+            if ($packages.Count -ne 1) { throw "Expected one package for $edition" }
+          }
+
+      - uses: actions/upload-artifact@v7
+        if: steps.prepare.outputs.editions != ''
+        with:
+          name: idea-packages
+          path: packages/*.nupkg
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: true
+
+      - name: Commit and push the new version
+        if: github.event_name == 'schedule' && steps.prepare.outputs.editions != ''
+        shell: bash
+        run: |
+          version=$(sed -nE 's/.*<version>([^<]+)<\/version>.*/\1/p' community/intellijidea-community.nuspec)
+          git add -- {community,ultimate,unified}/*.nuspec {community,ultimate,unified}/tools/chocolateyInstall.ps1
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+            commit -m "chore: bump intellijidea packages to $version"
+          git push origin HEAD:refs/heads/main
+
+  publish:
+    needs: prepare
+    if: github.event_name != 'workflow_dispatch' && needs.prepare.outputs.editions != ''
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: ${{ fromJSON(needs.prepare.outputs.editions) }}
+
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: idea-packages
+          path: packages
+
+      - name: Submit package to Chocolatey
+        shell: pwsh
         env:
           CHOCO_KEY: ${{ secrets.CHOCO_KEY }}
-      - name: community
-        shell: powershell
+          EDITION: ${{ matrix.edition }}
         run: |
-          cd community
-          choco pack
-          choco push --source https://push.chocolatey.org/ -k $env:CHOCO_KEY
-        env:
-          CHOCO_KEY: ${{ secrets.CHOCO_KEY }}
-      - name: unified
-        shell: powershell
-        run: |
-          cd unified
-          choco pack
-          choco push --source https://push.chocolatey.org/ -k $env:CHOCO_KEY
-        env:
-          CHOCO_KEY: ${{ secrets.CHOCO_KEY }}
+          if (-not $env:CHOCO_KEY) { throw 'CHOCO_KEY is missing' }
+          $packages = @(Get-ChildItem packages -Filter "intellijidea-$env:EDITION.*.nupkg" -File)
+          if ($packages.Count -ne 1) { throw "Expected one package for $env:EDITION" }
+          choco push $packages[0].FullName --source 'https://push.chocolatey.org/' -k $env:CHOCO_KEY
+          if ($LASTEXITCODE -ne 0) { throw "choco push failed for $env:EDITION" }
